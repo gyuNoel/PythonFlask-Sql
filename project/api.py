@@ -111,5 +111,19 @@ def edit_user(id):
         201,
     )
 
+@app.route("/users/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    cur = mysql.connection.cursor()
+    cur.execute(""" DELETE FROM users where user_id = %s """, (id,))
+    mysql.connection.commit()
+    rows_affected = cur.rowcount
+    cur.close()
+    return make_response(
+        jsonify(
+            {"message": "User deleted successfully", "rows_affected": rows_affected}
+        ),
+        200,
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

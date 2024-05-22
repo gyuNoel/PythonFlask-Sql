@@ -23,8 +23,13 @@ def data_fetch(query):
     return data
 
 @app.route("/users", methods=["GET"])
-def get_actors():
+def get_users():
     data = data_fetch("""select * from users""")
+    return make_response(jsonify(data), 200)
+
+@app.route("/products", methods=["GET"])
+def get_products():
+    data = data_fetch("""select * from products""")
     return make_response(jsonify(data), 200)
 
 

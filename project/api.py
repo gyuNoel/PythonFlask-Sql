@@ -32,6 +32,11 @@ def get_products():
     data = data_fetch("""select * from products""")
     return make_response(jsonify(data), 200)
 
+@app.route("/orders", methods=["GET"])
+def get_orders():
+    data = data_fetch("""select * from orders""")
+    return make_response(jsonify(data), 200)
+
 
 
 if __name__ == "__main__":

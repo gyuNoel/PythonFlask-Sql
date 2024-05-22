@@ -44,10 +44,17 @@ def get_order_details():
 
 @app.route("/users/<int:id>", methods=["GET"])
 def get_user_by_id(id):
-    data = data_fetch("""SELECT * FROM users where user_id = {}""".format(id))
+    data = data_fetch("""SELECT user_id, username ,email FROM users where user_id = {}""".format(id))
+    return make_response(jsonify(data), 200)
+
+@app.route("/users/<int:id>/orders", methods=["GET"])
+def get_orders_by_user_id(id):
+    data = data_fetch("""SELECT o.order_id, o.order_date, o.total, o.status
+                        FROM orders.orders o
+                        JOIN users u ON o.user_id = u.user_id
+                        WHERE u.user_id = {}
+                        """.format(id))
     return make_response(jsonify(data), 200)
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-

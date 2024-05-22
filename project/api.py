@@ -70,7 +70,7 @@ where u.user_id = {}
     return make_response(jsonify(data), 200)
 
 @app.route("/users", methods=["POST"])
-def add_actor():
+def add_user():
     cur = mysql.connection.cursor()
     info = request.get_json()
     username = info["Username"]
@@ -78,6 +78,27 @@ def add_actor():
     cur.execute(
         """ INSERT INTO users (username, email) VALUE (%s, %s)""",
         (username, email),
+    )
+    mysql.connection.commit()
+    print("row(s) affected :{}".format(cur.rowcount))
+    rows_affected = cur.rowcount
+    cur.close()
+    return make_response(
+        jsonify(
+            {"message": "username added successfully", "rows_affected": rows_affected}
+        ),
+        201,
+    )
+
+@app.route("/users/<int:id>", methods=["PUT"])
+def edit_user(id):
+    cur = mysql.connection.cursor()
+    info = request.get_json()
+    username = info["Username"]
+    email = info["email"]
+    cur.execute(
+        """ UPDATE users SET username=%s, email=%s WHERE user_id = %s""",
+        (username, email,id),
     )
     mysql.connection.commit()
     print("row(s) affected :{}".format(cur.rowcount))

@@ -37,6 +37,13 @@ def get_orders():
     data = data_fetch("""select * from orders""")
     return make_response(jsonify(data), 200)
 
+@app.route("/orderdetails", methods=["GET"])
+def get_order_details():
+    data = data_fetch("""select * from orderdetails""")
+    return make_response(jsonify(data), 200)
+
+
+
 
 
 if __name__ == "__main__":

@@ -42,9 +42,10 @@ def get_order_details():
     data = data_fetch("""select * from orderdetails""")
     return make_response(jsonify(data), 200)
 
-
-
-
+@app.route("/users/<int:id>", methods=["GET"])
+def get_user_by_id(id):
+    data = data_fetch("""SELECT * FROM users where user_id = {}""".format(id))
+    return make_response(jsonify(data), 200)
 
 if __name__ == "__main__":
     app.run(debug=True)

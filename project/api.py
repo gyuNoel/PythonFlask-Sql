@@ -29,7 +29,7 @@ def get_users():
 
 @app.route("/products", methods=["GET"])
 def get_products():
-    data = data_fetch("""select * from products""")
+    data = data_fetch("""SELECT name,price,stock from orders.products""")
     return make_response(jsonify(data), 200)
 
 @app.route("/orders", methods=["GET"])

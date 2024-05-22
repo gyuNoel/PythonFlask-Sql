@@ -69,5 +69,26 @@ where u.user_id = {}
                         """.format(id))
     return make_response(jsonify(data), 200)
 
+@app.route("/users", methods=["POST"])
+def add_actor():
+    cur = mysql.connection.cursor()
+    info = request.get_json()
+    username = info["Username"]
+    email = info["email"]
+    cur.execute(
+        """ INSERT INTO users (username, email) VALUE (%s, %s)""",
+        (username, email),
+    )
+    mysql.connection.commit()
+    print("row(s) affected :{}".format(cur.rowcount))
+    rows_affected = cur.rowcount
+    cur.close()
+    return make_response(
+        jsonify(
+            {"message": "username added successfully", "rows_affected": rows_affected}
+        ),
+        201,
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -22,33 +22,59 @@ def data_fetch(query):
     cur.close()
     return data
 
+def dict_to_xml(data):
+    xml = ['<root>']
+    for item in data:
+        xml.append('<item>')
+        for key, value in item.items():
+            xml.append(f'<{key}>{value}</{key}>')
+        xml.append('</item>')
+    xml.append('</root>')
+    return ''.join(xml)
+
+def output_format(data, format):
+    if format == 'xml':
+        xml_data = dict_to_xml(data)
+        response = make_response(xml_data, 200)
+        response.headers["Content-Type"] = "application/xml"
+    else:  # Default to JSON
+        response = make_response(jsonify(data), 200)
+        response.headers["Content-Type"] = "application/json"
+    return response
+
 @app.route("/users", methods=["GET"])
 def get_users():
+    format = request.args.get('format', 'json')
     data = data_fetch("""select * from users""")
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/products", methods=["GET"])
 def get_products():
+    format = request.args.get('format', 'json')
     data = data_fetch("""SELECT name,price,stock from orders.products""")
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/orders", methods=["GET"])
 def get_orders():
+    format = request.args.get('format', 'json')
     data = data_fetch("""select * from orders""")
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/orderdetails", methods=["GET"])
 def get_order_details():
+    format = request.args.get('format', 'json')
     data = data_fetch("""select * from orderdetails""")
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/users/<int:id>", methods=["GET"])
 def get_user_by_id(id):
+    format = request.args.get('format', 'json')
     data = data_fetch("""SELECT user_id, username ,email FROM users where user_id = {}""".format(id))
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/users/<int:id>/orders", methods=["GET"])
 def get_orders_by_user_id(id):
+    format = request.args.get('format', 'json')
     data = data_fetch("""SELECT 
     o.order_id, 
     u.username AS user_name,
@@ -67,7 +93,7 @@ JOIN
     products p ON od.product_id = p.product_id
 where u.user_id = {}
                         """.format(id))
-    return make_response(jsonify(data), 200)
+    return output_format(data, format)
 
 @app.route("/users", methods=["POST"])
 def add_user():
@@ -124,6 +150,13 @@ def delete_user(id):
         ),
         200,
     )
+
+@app.route("/users/format", methods=["GET"])
+def get_params():
+    fmt = request.args.get('id') #sa browser link to ginagamit
+    foo = request.args.get('id2')
+    return make_response(jsonify({"Test": fmt, "UID": foo}), 200) 
+
 
 if __name__ == "__main__":
     app.run(debug=True)

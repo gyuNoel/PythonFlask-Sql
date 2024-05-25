@@ -14,7 +14,7 @@ app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 mysql = MySQL(app)
 
 users ={
-    "gyuNoel":"passWord444",
+    "gyuNoel":"passWord",
     "crimsonweave":"luna600",
 }
 

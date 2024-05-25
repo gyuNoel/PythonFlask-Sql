@@ -68,8 +68,8 @@ class APITestCase(unittest.TestCase):
 
     def test_add_user(self):
         new_user = {
-            "Username": "NewUserName",
-            "email": "uniqueemail@example.com"
+            "Username": "NewAddedUser",
+            "email": "newaddeduser@example.com"
         }
         response = self.client.post('/users', headers=self.auth_headers, data=json.dumps(new_user))
         self.assertEqual(response.status_code, 201)
@@ -77,15 +77,15 @@ class APITestCase(unittest.TestCase):
 
     def test_edit_user(self):
         edit_user = {
-            "Username": "updateduser",
-            "email": "updateduser@example.com"
+            "Username": "Lom0",
+            "email": "randomemail900@example.com"
         }
         response = self.client.put('/users/1', headers=self.auth_headers, data=json.dumps(edit_user))
         self.assertEqual(response.status_code, 201)
         self.assertIn('username added successfully', response.get_data(as_text=True))
 
     def test_delete_user(self):
-        response = self.client.delete('/users/114', headers=self.auth_headers)
+        response = self.client.delete('/users/122', headers=self.auth_headers)
         self.assertEqual(response.status_code, 200)
         self.assertIn('User deleted successfully', response.get_data(as_text=True))
 
@@ -106,7 +106,6 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_orders_by_user_id(self):
-        # Assuming a user with ID 1 exists and has orders
         response = self.client.get('/users/1/orders', headers=self.auth_headers)
         self.assertEqual(response.status_code, 200)
 if __name__ == "__main__":

@@ -22,12 +22,12 @@ users ={
 def verify_password(username,password):
     if username in users and users[username] == password:
         return username
-    
+
 
 @app.route("/")
 @auth.login_required()
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>Orders Database.</p>"
 
 def data_fetch(query):
     cur = mysql.connection.cursor()
@@ -154,7 +154,7 @@ def edit_user(id):
     cur.close()
     return make_response(
         jsonify(
-            {"message": "username added successfully", "rows_affected": rows_affected}
+            {"message": "username edited successfully", "rows_affected": rows_affected}
         ),
         201,
     )

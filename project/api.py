@@ -1,17 +1,31 @@
 from flask import Flask, make_response, jsonify, request
 from flask_mysqldb import MySQL
+from flask_httpauth import HTTPBasicAuth
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = "root"
 app.config["MYSQL_DB"] = "orders"
-
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 
 mysql = MySQL(app)
 
+users ={
+    "gyuNoel":"passWord444",
+    "crimsonweave":"luna600",
+}
+
+@auth.verify_password
+def verify_password(username,password):
+    if username in users and users[username] == password:
+        return username
+    
+
 @app.route("/")
+@auth.login_required()
 def hello_world():
     return "<p>Hello, World!</p>"
 
@@ -43,36 +57,42 @@ def output_format(data, format):
     return response
 
 @app.route("/users", methods=["GET"])
+@auth.login_required()
 def get_users():
     format = request.args.get('format', 'json')
     data = data_fetch("""select * from users""")
     return output_format(data, format)
 
 @app.route("/products", methods=["GET"])
+@auth.login_required()
 def get_products():
     format = request.args.get('format', 'json')
     data = data_fetch("""SELECT name,price,stock from orders.products""")
     return output_format(data, format)
 
 @app.route("/orders", methods=["GET"])
+@auth.login_required()
 def get_orders():
     format = request.args.get('format', 'json')
     data = data_fetch("""select * from orders""")
     return output_format(data, format)
 
 @app.route("/orderdetails", methods=["GET"])
+@auth.login_required()
 def get_order_details():
     format = request.args.get('format', 'json')
     data = data_fetch("""select * from orderdetails""")
     return output_format(data, format)
 
 @app.route("/users/<int:id>", methods=["GET"])
+@auth.login_required()
 def get_user_by_id(id):
     format = request.args.get('format', 'json')
     data = data_fetch("""SELECT user_id, username ,email FROM users where user_id = {}""".format(id))
     return output_format(data, format)
 
 @app.route("/users/<int:id>/orders", methods=["GET"])
+@auth.login_required()
 def get_orders_by_user_id(id):
     format = request.args.get('format', 'json')
     data = data_fetch("""SELECT 
@@ -96,6 +116,7 @@ where u.user_id = {}
     return output_format(data, format)
 
 @app.route("/users", methods=["POST"])
+@auth.login_required()
 def add_user():
     cur = mysql.connection.cursor()
     info = request.get_json()
@@ -117,6 +138,7 @@ def add_user():
     )
 
 @app.route("/users/<int:id>", methods=["PUT"])
+@auth.login_required()
 def edit_user(id):
     cur = mysql.connection.cursor()
     info = request.get_json()
@@ -138,6 +160,7 @@ def edit_user(id):
     )
 
 @app.route("/users/<int:id>", methods=["DELETE"])
+@auth.login_required()
 def delete_user(id):
     cur = mysql.connection.cursor()
     cur.execute(""" DELETE FROM users where user_id = %s """, (id,))
@@ -151,12 +174,6 @@ def delete_user(id):
         200,
     )
 
-@app.route("/users/format", methods=["GET"])
-def get_params():
-    fmt = request.args.get('id') #sa browser link to ginagamit
-    foo = request.args.get('id2')
-    return make_response(jsonify({"Test": fmt, "UID": foo}), 200) 
-
-
 if __name__ == "__main__":
     app.run(debug=True)
+
